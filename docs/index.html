@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapture Documentation</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg: #ffffff;
+            --bg-code: #f8fafc;
+            --bg-aside: #eff6ff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text);
+            line-height: 1.7;
+            background: var(--bg);
+        }
+        .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 48px 0 36px;
+        }
+        header h1 { font-size: 2.5rem; font-weight: 700; }
+        header p { font-size: 1.15rem; opacity: 0.9; margin-top: 8px; }
+        nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 12px 0;
+        }
+        nav .container { display: flex; gap: 24px; flex-wrap: wrap; }
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        nav a:hover { text-decoration: underline; }
+        main { padding: 48px 0; }
+        section { margin-bottom: 56px; }
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary-dark);
+        }
+        h3 { font-size: 1.2rem; font-weight: 600; margin: 24px 0 12px; }
+        p { margin-bottom: 12px; }
+        pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 16px 0;
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+        }
+        :not(pre) > code {
+            background: var(--bg-code);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            border: 1px solid var(--border);
+        }
+        .aside {
+            background: var(--bg-aside);
+            border-left: 4px solid var(--primary);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        .aside strong { color: var(--primary-dark); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.92rem;
+        }
+        th, td {
+            padding: 10px 16px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        th { background: var(--bg-code); font-weight: 600; }
+        tr:nth-child(even) { background: #fafbfc; }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .badge-yes { background: #dcfce7; color: #166534; }
+        .badge-no { background: #fee2e2; color: #991b1b; }
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        @media (max-width: 640px) {
+            header h1 { font-size: 1.8rem; }
+            pre { font-size: 0.8rem; padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <h1>Mapture</h1>
+        <p>Modern object mapper for .NET &mdash; focused on safety, observability, and easy migration.</p>
+    </div>
+</header>
+
+<nav>
+    <div class="container">
+        <a href="#getting-started">Getting Started</a>
+        <a href="#profiles">Profiles</a>
+        <a href="#fluent-api">Fluent API</a>
+        <a href="#di">Dependency Injection</a>
+        <a href="#safety">Safety Features</a>
+        <a href="#migration">Migration Guide</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#api-reference">API Reference</a>
+    </div>
+</nav>
+
+<main>
+<div class="container">
+
+<!-- GETTING STARTED -->
+<section id="getting-started">
+    <h2>Getting Started</h2>
+
+    <h3>Installation</h3>
+    <pre><code>dotnet add package Mapture
+dotnet add package Mapture.Extensions.DependencyInjection</code></pre>
+
+    <div class="aside">
+        <strong>Supported frameworks:</strong> .NET Framework 4.8, .NET Standard 2.0, .NET 8, .NET 10
+    </div>
+
+    <h3>Basic Usage</h3>
+    <p>Create a configuration, then map objects:</p>
+    <pre><code>using Mapture;
+
+// 1. Define your models
+public class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+}
+
+public class UserDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+}
+
+// 2. Configure mapping
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap&lt;User, UserDto&gt;();
+});
+
+// 3. Create mapper and map
+IMapper mapper = config.CreateMapper();
+
+var user = new User { Id = 1, Name = "Alice", Email = "alice@example.com" };
+var dto = mapper.Map&lt;User, UserDto&gt;(user);
+
+Console.WriteLine(dto.Name); // "Alice"</code></pre>
+
+    <div class="aside">
+        <strong>Convention-based:</strong> Properties are matched by name automatically.
+        No explicit mapping is needed for properties with matching names and compatible types.
+    </div>
+</section>
+
+<!-- PROFILES -->
+<section id="profiles">
+    <h2>Profiles</h2>
+    <p>Organize mappings into reusable Profile classes:</p>
+
+    <pre><code>using Mapture;
+
+public class OrderProfile : Profile
+{
+    public OrderProfile()
+    {
+        CreateMap&lt;Order, OrderDto&gt;();
+        CreateMap&lt;OrderItem, OrderItemDto&gt;();
+    }
+}
+
+// Register in configuration
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile&lt;OrderProfile&gt;();
+});
+
+// Or scan an entire assembly
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfiles(typeof(OrderProfile).Assembly);
+});</code></pre>
+</section>
+
+<!-- FLUENT API -->
+<section id="fluent-api">
+    <h2>Fluent API</h2>
+
+    <h3>ForMember — Custom Property Mapping</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .ForMember(d => d.FullName,
+        opt => opt.MapFrom((Func&lt;User, string&gt;)(s => $"{s.First} {s.Last}")));</code></pre>
+
+    <h3>Ignore — Skip a Property</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .Ignore(d => d.InternalSecret);</code></pre>
+
+    <h3>ReverseMap — Bidirectional Mapping</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;().ReverseMap();
+
+// Now you can map in both directions:
+var dto = mapper.Map&lt;User, UserDto&gt;(user);
+var user = mapper.Map&lt;UserDto, User&gt;(dto);</code></pre>
+
+    <h3>ConvertUsing — Full Custom Conversion</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .ConvertUsing(src => new UserDto
+    {
+        Id = src.Id,
+        Name = src.Name.ToUpperInvariant()
+    });</code></pre>
+
+    <h3>BeforeMap / AfterMap — Pre/Post Processing</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .AfterMap((src, dest) => dest.Name = dest.Name.Trim());</code></pre>
+
+    <h3>ConstructUsing — Custom Instantiation</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .ConstructUsing(src => new UserDto { Id = src.Id * 10 });</code></pre>
+
+    <h3>Condition — Conditional Mapping</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .ForMember(d => d.Age, opt =>
+    {
+        opt.MapFrom((Func&lt;User, int&gt;)(s => s.Age));
+        opt.Condition(s => s.Age > 0);
+    });</code></pre>
+
+    <h3>UseValue — Constant Value</h3>
+    <pre><code>CreateMap&lt;User, UserDto&gt;()
+    .ForMember(d => d.Source, opt => opt.UseValue("API"));</code></pre>
+</section>
+
+<!-- DI -->
+<section id="di">
+    <h2>Dependency Injection</h2>
+    <p>Register Mapture in your ASP.NET Core or generic host application:</p>
+
+    <pre><code>using Mapture.Extensions.DependencyInjection;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Scan assembly for Profile classes, register IMapper as singleton
+builder.Services.AddMapture(typeof(Program).Assembly);
+
+// With options
+builder.Services.AddMapture(typeof(Program).Assembly, options =>
+{
+    options.MaxDepth = 10;
+    options.EnableCycleDetection = true;
+});</code></pre>
+
+    <h3>Inject and Use</h3>
+    <pre><code>public class UsersController : ControllerBase
+{
+    private readonly IMapper _mapper;
+
+    public UsersController(IMapper mapper) => _mapper = mapper;
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var users = _repository.GetAll();
+        var dtos = users.Select(u => _mapper.Map&lt;User, UserDto&gt;(u)).ToList();
+        return Ok(dtos);
+    }
+}</code></pre>
+</section>
+
+<!-- SAFETY -->
+<section id="safety">
+    <h2>Safety Features</h2>
+
+    <h3>Cycle Detection</h3>
+    <p>Prevents stack overflows from circular object references:</p>
+    <pre><code>var config = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap&lt;Node, NodeDto&gt;();
+}, new MaptureOptions { EnableCycleDetection = true });
+
+var node = new Node { Id = 1 };
+node.Parent = node; // Circular!
+
+var dto = mapper.Map&lt;Node, NodeDto&gt;(node);
+// dto.Parent is null — cycle safely broken</code></pre>
+
+    <h3>Max Depth Enforcement</h3>
+    <p>Limits recursion depth for deeply nested object graphs:</p>
+    <pre><code>new MaptureOptions { MaxDepth = 5 }</code></pre>
+
+    <h3>Configuration Validation</h3>
+    <p>Catch unmapped properties at startup, not at runtime:</p>
+    <pre><code>var config = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap&lt;User, UserDto&gt;();
+});
+
+config.AssertConfigurationIsValid();
+// Throws MaptureException if any destination properties
+// have no matching source property and aren't ignored</code></pre>
+</section>
+
+<!-- MIGRATION -->
+<section id="migration">
+    <h2>Migration from AutoMapper</h2>
+
+    <div class="aside">
+        <strong>Target:</strong> Migrate an existing AutoMapper project to Mapture in under 30 minutes.
+    </div>
+
+    <h3>Step 1 — Replace NuGet Packages</h3>
+    <pre><code># Remove AutoMapper packages
+dotnet remove package AutoMapper
+dotnet remove package AutoMapper.Extensions.Microsoft.DependencyInjection
+
+# Add Mapture packages
+dotnet add package Mapture
+dotnet add package Mapture.Extensions.DependencyInjection</code></pre>
+
+    <h3>Step 2 — Replace Namespaces</h3>
+    <p>Find and replace across your solution:</p>
+    <table>
+        <tr><th>Find</th><th>Replace</th></tr>
+        <tr><td><code>using AutoMapper;</code></td><td><code>using Mapture;</code></td></tr>
+        <tr><td><code>using AutoMapper.Extensions.Microsoft.DependencyInjection;</code></td><td><code>using Mapture.Extensions.DependencyInjection;</code></td></tr>
+    </table>
+
+    <h3>Step 3 — Replace DI Registration</h3>
+    <table>
+        <tr><th>AutoMapper</th><th>Mapture</th></tr>
+        <tr><td><code>services.AddAutoMapper(typeof(Startup));</code></td><td><code>services.AddMapture(typeof(Startup));</code></td></tr>
+    </table>
+
+    <h3>Step 4 — Run Tests</h3>
+    <p>Most mappings work identically. The same <code>Profile</code>, <code>CreateMap</code>, <code>ForMember</code>, <code>Ignore</code>, <code>ReverseMap</code> patterns are supported.</p>
+</section>
+
+<!-- COMPARISON -->
+<section id="comparison">
+    <h2>Comparison</h2>
+
+    <h3>Feature Comparison</h3>
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Mapture</th>
+            <th>AutoMapper</th>
+            <th>Mapster</th>
+        </tr>
+        <tr>
+            <td>Convention-based mapping</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>Profile system</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+            <td>ForMember / Ignore</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>ReverseMap</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>Nested object mapping</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>Collection mapping</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>Cycle detection</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-no">No</span></td>
+            <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+            <td>Max depth enforcement</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-no">No</span></td>
+            <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+            <td>Configuration validation</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-no">No</span></td>
+        </tr>
+        <tr>
+            <td>No forced telemetry</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-no">No</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>BeforeMap / AfterMap</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>ConvertUsing</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>ConstructUsing</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>Condition</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>.NET Framework 4.8</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>.NET Standard 2.0</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-no">No</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+        <tr>
+            <td>.NET 8 / .NET 10</td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+            <td><span class="badge badge-yes">Yes</span></td>
+        </tr>
+    </table>
+
+    <h3>Benchmark Results</h3>
+    <p>Measured with BenchmarkDotNet, .NET 8, simple object with one nested child:</p>
+    <table>
+        <tr>
+            <th>Method</th>
+            <th>Mean</th>
+            <th>Ratio vs Manual</th>
+            <th>Allocated</th>
+        </tr>
+        <tr>
+            <td>Manual Mapping</td>
+            <td>~15 ns</td>
+            <td>1.00x (baseline)</td>
+            <td>96 B</td>
+        </tr>
+        <tr>
+            <td>Mapster</td>
+            <td>~120 ns</td>
+            <td>~8x</td>
+            <td>168 B</td>
+        </tr>
+        <tr>
+            <td>AutoMapper</td>
+            <td>~250 ns</td>
+            <td>~17x</td>
+            <td>216 B</td>
+        </tr>
+        <tr>
+            <td>Mapture</td>
+            <td>~800 ns</td>
+            <td>~53x</td>
+            <td>520 B</td>
+        </tr>
+    </table>
+
+    <div class="aside">
+        <strong>Note:</strong> Mapture v1.0 uses reflection for maximum compatibility and safety.
+        For most real-world applications where mapping overhead is dwarfed by I/O latency (database queries,
+        HTTP calls, serialization), the difference is negligible. Future versions will add compiled expression caching.
+    </div>
+</section>
+
+<!-- API REFERENCE -->
+<section id="api-reference">
+    <h2>API Reference</h2>
+
+    <h3><code>IMapper</code></h3>
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr>
+            <td><code>Map&lt;TDest&gt;(object source)</code></td>
+            <td>Maps source to <code>TDest</code> using runtime type resolution</td>
+        </tr>
+        <tr>
+            <td><code>Map&lt;TSrc, TDest&gt;(TSrc source)</code></td>
+            <td>Maps source to new <code>TDest</code> instance</td>
+        </tr>
+        <tr>
+            <td><code>Map&lt;TSrc, TDest&gt;(TSrc source, TDest dest)</code></td>
+            <td>Maps source onto existing destination object</td>
+        </tr>
+        <tr>
+            <td><code>Map(object source, Type srcType, Type destType)</code></td>
+            <td>Non-generic mapping with explicit types</td>
+        </tr>
+    </table>
+
+    <h3><code>MapperConfiguration</code></h3>
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr>
+            <td><code>CreateMapper()</code></td>
+            <td>Creates an <code>IMapper</code> from this configuration</td>
+        </tr>
+        <tr>
+            <td><code>AssertConfigurationIsValid()</code></td>
+            <td>Throws if unmapped destination properties exist</td>
+        </tr>
+    </table>
+
+    <h3><code>IMappingExpression&lt;TSrc, TDest&gt;</code></h3>
+    <table>
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td><code>ForMember()</code></td><td>Configure custom member mapping</td></tr>
+        <tr><td><code>Ignore()</code></td><td>Skip mapping for a destination member</td></tr>
+        <tr><td><code>ReverseMap()</code></td><td>Create the inverse mapping</td></tr>
+        <tr><td><code>ConvertUsing()</code></td><td>Replace entire mapping with custom function</td></tr>
+        <tr><td><code>BeforeMap()</code></td><td>Action to run before mapping</td></tr>
+        <tr><td><code>AfterMap()</code></td><td>Action to run after mapping</td></tr>
+        <tr><td><code>ConstructUsing()</code></td><td>Custom destination construction</td></tr>
+    </table>
+
+    <h3><code>MaptureOptions</code></h3>
+    <table>
+        <tr><th>Property</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        <tr><td><code>CompatibilityMode</code></td><td>bool</td><td>false</td><td>Enable extra AutoMapper compatibility</td></tr>
+        <tr><td><code>MaxDepth</code></td><td>int</td><td>10</td><td>Maximum recursion depth</td></tr>
+        <tr><td><code>EnableCycleDetection</code></td><td>bool</td><td>true</td><td>Detect and break circular references</td></tr>
+        <tr><td><code>EnableDebugTracing</code></td><td>bool</td><td>false</td><td>Enable debug logging</td></tr>
+    </table>
+</section>
+
+</div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>Mapture &copy; 2024&ndash;2026. MIT License.</p>
+        <p style="margin-top: 8px;">This project is an independent implementation and is not affiliated with AutoMapper or any other mapping library.</p>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+
+## NuGet
+*.nupkg
+*.snupkg
+packages/
+
+## IDE
+.vs/
+.idea/
+*.DotSettings.user
+
+## Build
+[Dd]ebug/
+[Rr]elease/
+BenchmarkDotNet.Artifacts/
+
+## OS
+Thumbs.db
+.DS_Store

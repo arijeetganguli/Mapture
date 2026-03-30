@@ -1,0 +1,6 @@
+@Mapture.Sample.Api_HostAddress = http://localhost:5070
+
+GET {{Mapture.Sample.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

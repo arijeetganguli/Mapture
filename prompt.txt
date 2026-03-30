@@ -1,0 +1,274 @@
+You are a senior .NET architect, OSS maintainer, and platform engineer.
+
+Your task is to design and implement a production-grade object mapping library called "MapSharp".
+
+The goal is to create a modern, safe, high-performance alternative to AutoMapper, with near drop-in migration capability, while ensuring full legal compliance through independent implementation.
+
+--------------------------------
+CRITICAL SUCCESS METRIC
+--------------------------------
+
+An existing AutoMapper project should migrate to MapSharp in under 30 minutes with minimal or no code changes.
+
+--------------------------------
+LEGAL AND COMPLIANCE (MANDATORY)
+--------------------------------
+
+1. Clean room implementation:
+   - Do NOT copy AutoMapper source code
+   - Do NOT reuse tests or internal logic
+   - Do NOT replicate implementation details
+
+2. Allowed:
+   - Similar API surface for migration ease
+   - Common naming patterns (IMapper, Profile, CreateMap)
+
+3. Must include disclaimer:
+   "This project is an independent implementation and is not affiliated with AutoMapper"
+
+--------------------------------
+CORE PRINCIPLE
+--------------------------------
+
+Adoption over elegance.
+
+Preserve familiarity. Minimize migration effort. Avoid breaking mental models.
+
+--------------------------------
+SOLUTION STRUCTURE
+--------------------------------
+
+MapSharp.sln
+
+/src
+  MapSharp.Core
+  MapSharp.Compatibility
+  MapSharp.Generators
+  MapSharp.Extensions.DependencyInjection
+  MapSharp.Analyzers
+  MapSharp.Benchmarks
+
+/tests
+  MapSharp.Tests
+  MapSharp.CompatibilityTests
+
+/enterprise
+  MapSharp.Enterprise
+
+/samples
+  MapSharp.Sample.Api
+
+--------------------------------
+CORE IMPLEMENTATION (REQUIRED)
+--------------------------------
+
+### 1. IMapper Interface
+
+public interface IMapper
+{
+    TDestination Map<TDestination>(object source);
+    TDestination Map<TSource, TDestination>(TSource source);
+    object Map(object source, Type sourceType, Type destinationType);
+}
+
+--------------------------------
+
+### 2. MapperConfiguration
+
+- Accept configuration lambda
+- Store mapping definitions
+- Build execution plan
+
+--------------------------------
+
+### 3. Profile System
+
+- Abstract Profile class
+- Supports CreateMap<TSource, TDestination>()
+
+--------------------------------
+
+### 4. Mapping Engine (Starter Implementation)
+
+Implement:
+
+- Property to property mapping using compiled expressions
+- Dictionary of mapping functions keyed by (source, destination)
+
+Example:
+
+- Build expression tree
+- Compile to Func<TSource, TDestination>
+- Cache delegates
+
+--------------------------------
+
+### 5. Fluent API Support
+
+Implement:
+
+- ForMember
+- Ignore
+- ReverseMap
+
+--------------------------------
+
+CONFIGURATION OPTIONS
+--------------------------------
+
+services.AddMapSharp(options =>
+{
+    options.CompatibilityMode = true;
+    options.MaxDepth = 10;
+    options.EnableCycleDetection = true;
+    options.EnableDebugTracing = false;
+});
+
+--------------------------------
+COMPATIBILITY LAYER (CRITICAL)
+--------------------------------
+
+- Interpret common AutoMapper usage patterns
+- Provide behavior parity for:
+  - Nested objects
+  - Collections
+  - Null handling
+
+- Provide:
+  CompatibilityMode = true
+
+--------------------------------
+SOURCE GENERATOR (ADVANCED)
+--------------------------------
+
+Create MapSharp.Generators:
+
+- Scan CreateMap declarations
+- Generate strongly typed mapping code at compile time
+- Replace runtime reflection
+
+Generated code example:
+
+public static UserDto Map(User source)
+{
+    return new UserDto
+    {
+        Id = source.Id,
+        Name = source.Name
+    };
+}
+
+--------------------------------
+DEPENDENCY INJECTION
+--------------------------------
+
+Create extension:
+
+services.AddMapSharp(typeof(Startup));
+
+- Scan assemblies for Profile classes
+- Register IMapper singleton
+
+--------------------------------
+TESTING (MANDATORY)
+--------------------------------
+
+### Unit Tests
+
+- Simple mapping
+- Fluent API
+
+### Safety Tests
+
+- Recursion detection
+- MaxDepth enforcement
+
+### Compatibility Tests
+
+Compare with AutoMapper:
+
+- Run same mapping
+- Assert identical results
+
+--------------------------------
+BENCHMARKING
+--------------------------------
+
+Use BenchmarkDotNet.
+
+Compare:
+- MapSharp
+- AutoMapper
+- Mapster
+- Manual mapping
+
+Measure:
+- Throughput
+- Allocations
+- Latency
+
+--------------------------------
+CI/CD PIPELINE
+--------------------------------
+
+GitHub Actions:
+
+- Build
+- Run tests
+- Run compatibility tests
+- Generate coverage
+
+--------------------------------
+README REQUIREMENTS
+--------------------------------
+
+Include:
+
+1. Positioning:
+   "Modern object mapper for .NET focused on safety and observability"
+
+2. Quick start
+3. Migration guide
+4. Benchmark results
+5. Comparison table
+6. Legal disclaimer
+
+--------------------------------
+ENTERPRISE EXTENSION (OPTIONAL)
+--------------------------------
+
+MapSharp.Enterprise:
+
+1. Metrics:
+   - Mapping execution counts
+   - Latency
+
+2. Audit Trail:
+   - Field-level lineage tracking
+
+3. Licensing:
+   - Optional license key validation
+   - No forced telemetry
+
+--------------------------------
+DELIVERABLES
+--------------------------------
+
+1. Working solution
+2. Core mapping engine
+3. Compatibility layer
+4. Source generator
+5. Test suite
+6. Benchmark suite
+7. NuGet packaging
+8. Sample API
+
+--------------------------------
+
+Think like a platform engineer building for thousands of production systems.
+
+Prioritize:
+- Stability
+- Predictability
+- Migration ease
+- Safety

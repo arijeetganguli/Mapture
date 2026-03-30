@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <PackageId>Mapture</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Mapture Contributors</Authors>
+    <Description>Modern, safe, high-performance object mapper for .NET. An independent implementation focused on safety and observability.</Description>
+    <PackageTags>mapping;automapper;object-mapper;dto</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+</Project>

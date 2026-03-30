@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/enterprise/">
+    <Project Path="enterprise/Mapture.Enterprise/Mapture.Enterprise.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/Mapture.Sample.Api/Mapture.Sample.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Mapture.Benchmarks/Mapture.Benchmarks.csproj" />
+    <Project Path="src/Mapture.Compatibility/Mapture.Compatibility.csproj" />
+    <Project Path="src/Mapture.Core/Mapture.Core.csproj" />
+    <Project Path="src/Mapture.Extensions.DependencyInjection/Mapture.Extensions.DependencyInjection.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Mapture.CompatibilityTests/Mapture.CompatibilityTests.csproj" />
+    <Project Path="tests/Mapture.Tests/Mapture.Tests.csproj" />
+  </Folder>
+</Solution>
