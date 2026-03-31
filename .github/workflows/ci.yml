@@ -26,11 +26,17 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration Release
 
-    - name: Run Unit Tests
-      run: dotnet test tests/Mapture.Tests --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage"
+    - name: Run Unit Tests (net8.0)
+      run: dotnet test tests/Mapture.Tests --no-build --configuration Release --framework net8.0 --verbosity normal --collect:"XPlat Code Coverage"
 
-    - name: Run Compatibility Tests
-      run: dotnet test tests/Mapture.CompatibilityTests --no-build --configuration Release --verbosity normal
+    - name: Run Unit Tests (net10.0)
+      run: dotnet test tests/Mapture.Tests --no-build --configuration Release --framework net10.0 --verbosity normal
+
+    - name: Run Compatibility Tests (net8.0)
+      run: dotnet test tests/Mapture.CompatibilityTests --no-build --configuration Release --framework net8.0 --verbosity normal
+
+    - name: Run Compatibility Tests (net10.0)
+      run: dotnet test tests/Mapture.CompatibilityTests --no-build --configuration Release --framework net10.0 --verbosity normal
 
     - name: Upload Coverage
       if: success()
