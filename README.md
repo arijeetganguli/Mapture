@@ -2,7 +2,7 @@
 
 **The fastest object mapper for .NET — with safety features no other mapper has.**
 
-[![Build](https://github.com/YOUR_ORG/Mapture/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_ORG/Mapture/actions)
+[![Build](https://github.com/arijeetganguli/Mapture/actions/workflows/ci.yml/badge.svg)](https://github.com/arijeetganguli/Mapture/actions)
 [![NuGet](https://img.shields.io/nuget/v/Mapture.svg)](https://www.nuget.org/packages/Mapture/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
