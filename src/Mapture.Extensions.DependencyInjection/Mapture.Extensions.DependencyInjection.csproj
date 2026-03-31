@@ -4,6 +4,12 @@
     <TargetFrameworks>net48;netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <PackageId>Mapture.Extensions.DependencyInjection</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Mapture Contributors</Authors>
+    <Description>Dependency injection extensions for Mapture. Register IMapper and auto-discover Profiles with a single call to AddMapture().</Description>
+    <PackageTags>mapping;automapper;object-mapper;dependency-injection</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>

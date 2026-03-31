@@ -11,6 +11,9 @@ using AutoMapperConfig = AutoMapper.MapperConfiguration;
 using AutoMapperProfile = AutoMapper.Profile;
 using IAutoMapper = AutoMapper.IMapper;
 
+using PdMapperConfig = PanoramicData.Mapper.MapperConfiguration;
+using IPdMapper = PanoramicData.Mapper.IMapper;
+
 BenchmarkRunner.Run<MappingBenchmarks>(
     DefaultConfig.Instance
         .WithSummaryStyle(SummaryStyle.Default.WithRatioStyle(BenchmarkDotNet.Columns.RatioStyle.Trend)));
@@ -21,6 +24,7 @@ public class MappingBenchmarks
 {
     private Mapture.IMapper _MaptureMapper = null!;
     private IAutoMapper _autoMapper = null!;
+    private IPdMapper _pdMapper = null!;
     private BenchmarkUser _source = null!;
 
     [GlobalSetup]
@@ -41,6 +45,13 @@ public class MappingBenchmarks
             cfg.CreateMap<BenchmarkAddress, BenchmarkAddressDto>();
         });
         _autoMapper = amConfig.CreateMapper();
+
+        // PanoramicData.Mapper setup
+        var pdConfig = new PdMapperConfig(cfg =>
+        {
+            cfg.AddProfile(new PdBenchmarkProfile());
+        });
+        _pdMapper = pdConfig.CreateMapper();
 
         // Mapster setup (uses conventions by default)
         TypeAdapterConfig.GlobalSettings.NewConfig<BenchmarkUser, BenchmarkUserDto>();
@@ -97,6 +108,12 @@ public class MappingBenchmarks
     {
         return _source.Adapt<BenchmarkUserDto>();
     }
+
+    [Benchmark]
+    public BenchmarkUserDto PanoramicData_Map()
+    {
+        return _pdMapper.Map<BenchmarkUserDto>(_source);
+    }
 }
 
 public class BenchmarkUser
@@ -131,4 +148,13 @@ public class BenchmarkAddressDto
     public string City { get; set; } = "";
     public string State { get; set; } = "";
     public string Zip { get; set; } = "";
+}
+
+public class PdBenchmarkProfile : PanoramicData.Mapper.Profile
+{
+    public PdBenchmarkProfile()
+    {
+        CreateMap<BenchmarkUser, BenchmarkUserDto>();
+        CreateMap<BenchmarkAddress, BenchmarkAddressDto>();
+    }
 }

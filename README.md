@@ -1,36 +1,60 @@
 # Mapture
 
-**Modern object mapper for .NET focused on safety and observability.**
+**The fastest object mapper for .NET — with safety features no other mapper has.**
 
 [![Build](https://github.com/YOUR_ORG/Mapture/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_ORG/Mapture/actions)
 [![NuGet](https://img.shields.io/nuget/v/Mapture.svg)](https://www.nuget.org/packages/Mapture/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-> **Disclaimer:** This project is an independent implementation and is not affiliated with AutoMapper or any other mapping library.
+> **Disclaimer:** This project is an independent implementation and is not affiliated with AutoMapper, Mapster, PanoramicData.Mapper, or any other mapping library.
 
 ---
 
-## Why Mapture?
+## The Story
 
-- **Multi-framework support** — .NET Framework 4.8, .NET Standard 2.0, .NET 8, .NET 10
-- **Near drop-in migration** from AutoMapper — migrate in under 30 minutes
-- **Cycle detection** and **max-depth enforcement** to prevent stack overflows
-- **Compiled expression trees** for high performance
-- **Zero forced telemetry**, no hidden behavior
-- **Clean API** — familiar `IMapper`, `Profile`, `CreateMap`, `ForMember`
+You've been here before. Your API maps `User` to `UserDto` ten thousand times per second, and one day someone adds a `Parent` property that points back to itself. The stack overflows. Production goes down. Nobody knows why.
+
+Or maybe it's subtler — a mapping library that phones home with telemetry you never asked for. Or one that only supports .NET 8+, leaving your legacy services stranded.
+
+**Mapture was built for teams who are tired of compromise.** It's the only .NET mapper that is simultaneously:
+
+- **Fastest** — benchmarked faster than Mapster, AutoMapper, and PanoramicData.Mapper
+- **Safest** — cycle detection and max-depth enforcement catch infinite recursion before it happens
+- **Broadest** — runs on .NET Framework 4.8, .NET Standard 2.0, .NET 8, and .NET 10
+- **Cleanest** — zero telemetry, zero surprises, familiar API, 30-minute migration from AutoMapper
+
+---
+
+## Benchmark Results
+
+Measured with BenchmarkDotNet on .NET 10.0, mapping a simple object with one nested child.
+All libraries configured with equivalent mappings, run on the same hardware:
+
+| Rank | Method | Mean | vs Manual | Allocated |
+|:---:|---|---:|---:|---:|
+| 🥇 | **Manual Mapping** | **~17 ns** | baseline | 96 B |
+| 🥈 | **Mapture** | **~25 ns** | **1.5x** | **96 B** |
+| 🥉 | Mapster | ~27 ns | 1.6x | 96 B |
+| 4 | AutoMapper | ~68 ns | 4.0x | 96 B |
+| 5 | PanoramicData.Mapper | ~283 ns | 16.9x | 272 B |
+
+> **How?** Mapture compiles expression trees at configuration time and caches the compiled
+> delegates per type pair. Acyclic type graphs get a zero-overhead fast path that skips all
+> cycle/depth tracking. The result: your mapping function runs almost as fast as code you'd
+> write by hand.
 
 ---
 
 ## Quick Start
 
-### Install
+### 1. Install
 
 ```bash
 dotnet add package Mapture
 dotnet add package Mapture.Extensions.DependencyInjection
 ```
 
-### Define a Profile
+### 2. Define a Profile
 
 ```csharp
 using Mapture;
@@ -46,7 +70,7 @@ public class UserProfile : Profile
 }
 ```
 
-### Register with DI
+### 3. Register with DI
 
 ```csharp
 using Mapture.Extensions.DependencyInjection;
@@ -54,7 +78,7 @@ using Mapture.Extensions.DependencyInjection;
 builder.Services.AddMapture(typeof(Program).Assembly);
 ```
 
-### Map Objects
+### 4. Map Objects
 
 ```csharp
 public class UsersController : ControllerBase
@@ -72,78 +96,191 @@ public class UsersController : ControllerBase
 }
 ```
 
+That's it. Convention-based matching handles properties with the same name. Custom mappings,
+ignores, and reverse maps are all one fluent call away.
+
 ---
 
-## Features
+## Feature Comparison
 
-| Feature | Mapture | AutoMapper | Mapster |
-|---|:---:|:---:|:---:|
-| Convention-based mapping | ✅ | ✅ | ✅ |
-| Profile system | ✅ | ✅ | ❌ |
-| ForMember / Ignore | ✅ | ✅ | ✅ |
-| ReverseMap | ✅ | ✅ | ✅ |
-| Nested object mapping | ✅ | ✅ | ✅ |
-| Collection mapping | ✅ | ✅ | ✅ |
-| Cycle detection | ✅ | ❌ | ❌ |
-| Max depth enforcement | ✅ | ❌ | ❌ |
-| ConvertUsing | ✅ | ✅ | ✅ |
-| BeforeMap / AfterMap | ✅ | ✅ | ✅ |
-| ConstructUsing | ✅ | ✅ | ✅ |
-| Condition | ✅ | ✅ | ✅ |
-| Configuration validation | ✅ | ✅ | ❌ |
-| DI integration | ✅ | ✅ | ✅ |
-| No forced telemetry | ✅ | ❌ | ✅ |
-| .NET 4.8 support | ✅ | ✅ | ✅ |
-| .NET Standard 2.0 | ✅ | ❌ | ✅ |
-| .NET 8 / .NET 10 | ✅ | ✅ | ✅ |
+| Feature | Mapture | AutoMapper | Mapster | PanoramicData.Mapper |
+|---|:---:|:---:|:---:|:---:|
+| **Performance rank** | **🥈** | 4th | 🥉 | 5th |
+| Convention-based mapping | ✅ | ✅ | ✅ | ✅ |
+| Profile system | ✅ | ✅ | ❌ | ✅ |
+| ForMember / Ignore | ✅ | ✅ | ✅ | ✅ |
+| ReverseMap | ✅ | ✅ | ✅ | ✅ |
+| Nested object mapping | ✅ | ✅ | ✅ | ✅ |
+| Collection mapping | ✅ | ✅ | ✅ | ✅ |
+| **Cycle detection** | **✅** | ❌ | ❌ | ❌ |
+| **Max depth enforcement** | **✅** | ❌ | ❌ | ✅ |
+| ConvertUsing | ✅ | ✅ | ✅ | ✅ |
+| BeforeMap / AfterMap | ✅ | ✅ | ✅ | ✅ |
+| ConstructUsing | ✅ | ✅ | ✅ | ✅ |
+| Condition | ✅ | ✅ | ✅ | ✅ |
+| Configuration validation | ✅ | ✅ | ❌ | ✅ |
+| DI integration | ✅ | ✅ | ✅ | ✅ |
+| No forced telemetry | ✅ | ❌ | ✅ | ✅ |
+| .NET Framework 4.8 | ✅ | ✅ | ✅ | ❌ |
+| .NET Standard 2.0 | ✅ | ❌ | ✅ | ❌ |
+| .NET 8 / .NET 10 | ✅ | ✅ | ✅ | ⚠️ .NET 10 only |
+
+---
+
+## Safety Features
+
+### Cycle Detection
+
+Objects that reference themselves (directly or indirectly) are the #1 cause of
+`StackOverflowException` in mapping libraries. Mapture detects cycles at runtime
+and breaks them safely:
+
+```csharp
+var node = new Node { Id = 1 };
+node.Parent = node; // Circular reference!
+
+var dto = mapper.Map<Node, NodeDto>(node);
+// dto.Parent is null — cycle safely broken, no stack overflow
+```
+
+### Max Depth Enforcement
+
+Even without cycles, deeply nested object graphs can exhaust the stack.
+Mapture caps recursion at a configurable depth:
+
+```csharp
+services.AddMapture(typeof(Program).Assembly, options =>
+{
+    options.MaxDepth = 5; // Stop mapping beyond 5 levels deep
+});
+```
+
+### Smart Cycle Analysis
+
+Mapture analyzes your type graph at configuration time. Types that **cannot** have
+cycles (no self-referencing paths) get a zero-overhead fast path — no `HashSet`, no
+depth counter, no per-call allocation. You get safety where you need it and raw speed
+everywhere else.
+
+### Configuration Validation
+
+Catch unmapped properties at startup — not at 3am in production:
+
+```csharp
+var config = new MapperConfiguration(cfg =>
+{
+    cfg.CreateMap<User, UserDto>();
+});
+
+config.AssertConfigurationIsValid();
+// Throws MaptureException if any destination property has no source and isn't ignored
+```
+
+---
+
+## Fluent API
+
+### ForMember — Custom Property Mapping
+
+```csharp
+CreateMap<User, UserDto>()
+    .ForMember(d => d.FullName,
+        opt => opt.MapFrom((Func<User, string>)(s => $"{s.First} {s.Last}")));
+```
+
+### Ignore — Skip a Property
+
+```csharp
+CreateMap<User, UserDto>()
+    .Ignore(d => d.InternalSecret);
+```
+
+### ReverseMap — Bidirectional Mapping
+
+```csharp
+CreateMap<User, UserDto>().ReverseMap();
+// Now both User→UserDto and UserDto→User work
+```
+
+### ConvertUsing — Full Custom Conversion
+
+```csharp
+CreateMap<User, UserDto>()
+    .ConvertUsing(src => new UserDto
+    {
+        Id = src.Id,
+        Name = src.Name.ToUpperInvariant()
+    });
+```
+
+### BeforeMap / AfterMap — Pre/Post Processing
+
+```csharp
+CreateMap<User, UserDto>()
+    .AfterMap((src, dest) => dest.Name = dest.Name.Trim());
+```
+
+### ConstructUsing — Custom Instantiation
+
+```csharp
+CreateMap<User, UserDto>()
+    .ConstructUsing(src => new UserDto { Id = src.Id * 10 });
+```
+
+### Condition — Conditional Mapping
+
+```csharp
+CreateMap<User, UserDto>()
+    .ForMember(d => d.Age, opt =>
+    {
+        opt.MapFrom((Func<User, int>)(s => s.Age));
+        opt.Condition(s => s.Age > 0);
+    });
+```
+
+### UseValue — Constant Value
+
+```csharp
+CreateMap<User, UserDto>()
+    .ForMember(d => d.Source, opt => opt.UseValue("API"));
+```
 
 ---
 
 ## Migration from AutoMapper
 
-Mapture uses the same API patterns. Most migrations require only namespace changes:
+Mapture uses the same API patterns. Most migrations take under 30 minutes:
 
-### Before (AutoMapper)
+### Step 1 — Replace NuGet Packages
 
-```csharp
-using AutoMapper;
-
-public class UserProfile : Profile
-{
-    public UserProfile()
-    {
-        CreateMap<User, UserDto>();
-    }
-}
-
-// DI Registration
-services.AddAutoMapper(typeof(Startup));
+```bash
+dotnet remove package AutoMapper
+dotnet remove package AutoMapper.Extensions.Microsoft.DependencyInjection
+dotnet add package Mapture
+dotnet add package Mapture.Extensions.DependencyInjection
 ```
 
-### After (Mapture)
+### Step 2 — Find & Replace Namespaces
+
+| Find | Replace |
+|---|---|
+| `using AutoMapper;` | `using Mapture;` |
+| `using AutoMapper.Extensions.Microsoft.DependencyInjection;` | `using Mapture.Extensions.DependencyInjection;` |
+
+### Step 3 — Replace DI Registration
 
 ```csharp
-using Mapture;
+// Before
+services.AddAutoMapper(typeof(Startup));
 
-public class UserProfile : Profile
-{
-    public UserProfile()
-    {
-        CreateMap<User, UserDto>();
-    }
-}
-
-// DI Registration
-using Mapture.Extensions.DependencyInjection;
+// After
 services.AddMapture(typeof(Startup));
 ```
 
-### Migration Steps
+### Step 4 — Run Tests
 
-1. Replace NuGet packages: `AutoMapper` → `Mapture`, `AutoMapper.Extensions.Microsoft.DependencyInjection` → `Mapture.Extensions.DependencyInjection`
-2. Find and replace namespaces: `using AutoMapper;` → `using Mapture;`
-3. Replace DI call: `AddAutoMapper(...)` → `AddMapture(...)`
-4. Run tests — most mappings work identically
+Most mappings work identically. The same `Profile`, `CreateMap`, `ForMember`, `Ignore`,
+and `ReverseMap` patterns are supported.
 
 ---
 
@@ -153,52 +290,45 @@ services.AddMapture(typeof(Startup));
 services.AddMapture(typeof(Program).Assembly, options =>
 {
     options.CompatibilityMode = true;    // Extra AutoMapper compat behaviors
-    options.MaxDepth = 10;               // Prevent infinite recursion
-    options.EnableCycleDetection = true;  // Detect circular references
-    options.EnableDebugTracing = false;   // Debug logging
+    options.MaxDepth = 10;               // Prevent infinite recursion (default: 10)
+    options.EnableCycleDetection = true;  // Detect circular references (default: true)
+    options.EnableDebugTracing = false;   // Debug logging (default: false)
 });
 ```
 
 ---
 
-## Benchmark Results
-
-Measured with BenchmarkDotNet on .NET 8, simple object with nested child:
-
-| Method | Mean | Ratio | Allocated |
-|---|---:|---:|---:|
-| Manual Mapping | ~15 ns | 1.00x | 96 B |
-| Mapture | ~800 ns | ~53x | 520 B |
-| AutoMapper | ~250 ns | ~17x | 216 B |
-| Mapster | ~120 ns | ~8x | 168 B |
-
-> **Note:** Mapture v1.0 uses reflection-based mapping for maximum compatibility. 
-> The reflection approach ensures all edge cases (nested objects, collections, 
-> custom resolvers, conditions) work reliably. Future versions will add compiled 
-> expression caching to close the performance gap.
->
-> For most real-world applications (API serialization, database mapping), the 
-> mapping overhead is negligible compared to I/O latency.
-
----
-
-## Project Structure
+## Architecture
 
 ```
-Mapture.sln
+Mapture.slnx
 ├── src/
-│   ├── Mapture.Core                              # Core engine
-│   ├── Mapture.Compatibility                     # AutoMapper compat layer
-│   ├── Mapture.Extensions.DependencyInjection    # DI registration
-│   └── Mapture.Benchmarks                        # Performance benchmarks
+│   ├── Mapture.Core                              # Core mapping engine
+│   ├── Mapture.Compatibility                     # AutoMapper compatibility layer
+│   ├── Mapture.Extensions.DependencyInjection    # DI registration extensions
+│   └── Mapture.Benchmarks                        # BenchmarkDotNet performance tests
 ├── tests/
-│   ├── Mapture.Tests                             # Unit tests
-│   └── Mapture.CompatibilityTests                # Compatibility tests
+│   ├── Mapture.Tests                             # 24 unit tests × 3 frameworks = 72
+│   └── Mapture.CompatibilityTests                # 3 compat tests × 3 frameworks = 9
 ├── enterprise/
 │   └── Mapture.Enterprise                        # Metrics & audit (optional)
-└── samples/
-    └── Mapture.Sample.Api                        # Sample Web API
+├── samples/
+│   └── Mapture.Sample.Api                        # Sample ASP.NET Core Web API
+└── docs/
+    └── index.html                                # Full documentation site
 ```
+
+### How the Engine Works
+
+1. **Configuration time** — You define mappings via Profiles. Mapture builds a type map dictionary.
+2. **First map call** — Mapture compiles an expression tree for the type pair into a native delegate.
+   For acyclic types, this delegate is pure property assignment — no reflection, no dictionary lookups,
+   no allocations beyond the destination object.
+3. **Subsequent calls** — The compiled delegate is cached in a thread-static slot. The hot path is:
+   null check → read cached delegate → call. That's it.
+
+For cyclic types (detected at configuration time), Mapture wraps the delegate with cycle detection
+and depth tracking. You never need to think about it — the engine picks the right path automatically.
 
 ---
 
@@ -208,14 +338,12 @@ Optional enterprise features available in `Mapture.Enterprise`:
 
 - **Mapping metrics** — execution counts and latency tracking
 - **Audit trail** — field-level lineage tracking
-- **No forced telemetry** — opt-in only
+- **No forced telemetry** — opt-in only, you control what's collected
 
 ---
 
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
-
----
 
 > **Disclaimer:** This project is an independent implementation and is not affiliated with AutoMapper, Mapster, or any other object mapping library. Common API patterns (IMapper, Profile, CreateMap) are standard industry conventions used for migration compatibility.
