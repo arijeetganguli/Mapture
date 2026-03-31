@@ -8,9 +8,19 @@
     <Version>1.0.0</Version>
     <Authors>Mapture Contributors</Authors>
     <Description>Dependency injection extensions for Mapture. Register IMapper and auto-discover Profiles with a single call to AddMapture().</Description>
-    <PackageTags>mapping;automapper;object-mapper;dependency-injection</PackageTags>
+    <PackageTags>mapping;automapper;object-mapper;dependency-injection;dotnet;csharp;netstandard</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/arijeetganguli/Mapture</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/arijeetganguli/Mapture</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" Condition="Exists('..\..\icon.png')" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />

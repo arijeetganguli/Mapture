@@ -8,9 +8,19 @@
     <Version>1.0.0</Version>
     <Authors>Mapture Contributors</Authors>
     <Description>AutoMapper compatibility layer for Mapture. Enables easier migration from AutoMapper with compatible behaviors.</Description>
-    <PackageTags>mapping;automapper;object-mapper;compatibility</PackageTags>
+    <PackageTags>mapping;automapper;object-mapper;compatibility;dotnet;csharp;automapper-alternative;netstandard</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/arijeetganguli/Mapture</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/arijeetganguli/Mapture</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" Condition="Exists('..\..\icon.png')" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mapture.Core\Mapture.Core.csproj" />
